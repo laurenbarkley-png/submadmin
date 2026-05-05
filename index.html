@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mad Minute Subtraction Tests</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #e8f4fd;
+    --blue: #3b82f6;
+    --blue-dark: #1d4ed8;
+    --green: #22c55e;
+    --green-dark: #15803d;
+    --red: #ef4444;
+    --yellow: #fbbf24;
+    --purple: #8b5cf6;
+    --orange: #f97316;
+    --white: #ffffff;
+    --gray: #6b7280;
+    --light: #f1f5f9;
+    --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, #dbeafe 0%, #ede9fe 50%, #fce7f3 100%);
+    min-height: 100vh;
+    padding: 0 0 32px 0;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    padding: 18px 24px 14px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.25);
+    position: relative;
+  }
+  .app-header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    color: white;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  .stars-deco {
+    position: absolute; top: 10px; left: 18px; font-size: 1.4rem; opacity: 0.7;
+  }
+  .stars-deco2 {
+    position: absolute; top: 10px; right: 18px; font-size: 1.4rem; opacity: 0.7;
+  }
+
+  /* ── TABS ── */
+  .tabs-wrapper {
+    background: rgba(255,255,255,0.65);
+    padding: 10px 10px 0 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 3px solid #c7d2fe;
+  }
+  .tabs-wrapper::-webkit-scrollbar { display: none; }
+  .tabs {
+    display: flex;
+    gap: 6px;
+    min-width: max-content;
+    padding-bottom: 0;
+  }
+  .tab {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    padding: 10px 16px;
+    border-radius: 12px 12px 0 0;
+    border: 2.5px solid #c7d2fe;
+    border-bottom: none;
+    background: #e0e7ff;
+    color: #4f46e5;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .tab:hover { background: #c7d2fe; }
+  .tab.active {
+    background: white;
+    color: #2563eb;
+    border-color: #6366f1;
+    border-bottom: 3px solid white;
+    margin-bottom: -3px;
+    font-size: 1.05rem;
+    box-shadow: 0 -2px 8px rgba(99,102,241,0.12);
+  }
+  .tab.mixed {
+    background: #fde8ff;
+    color: #7c3aed;
+    border-color: #d8b4fe;
+  }
+  .tab.mixed.active {
+    background: white;
+    color: #7c3aed;
+    border-color: #7c3aed;
+  }
+
+  /* ── MAIN PANEL ── */
+  .panel {
+    background: white;
+    margin: 0 12px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 6px 24px rgba(99,102,241,0.10);
+    padding: 20px 20px 24px;
+    min-height: 300px;
+  }
+
+  /* ── SECTION HEADING ── */
+  .fact-heading {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    color: #4f46e5;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* ── TIMER + CONTROLS BAR ── */
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .timer-display {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.2rem;
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 3px solid #93c5fd;
+    border-radius: 14px;
+    padding: 6px 22px;
+    min-width: 100px;
+    text-align: center;
+    letter-spacing: 2px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .timer-display.urgent {
+    color: #dc2626;
+    border-color: #fca5a5;
+    background: #fff1f2;
+    animation: pulse 0.9s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.14);
+    letter-spacing: 0.5px;
+  }
+  .btn:active { transform: scale(0.95); }
+  .btn-start {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-size: 1.4rem;
+    padding: 16px 48px;
+    display: block;
+    margin: 0 auto 20px auto;
+  }
+  .btn-start:hover { transform: scale(1.04); box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+  .btn-check {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+  .btn-check:hover { transform: scale(1.04); box-shadow: 0 6px 20px rgba(59,130,246,0.35); }
+  .btn-try {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    font-size: 1.2rem;
+    padding: 14px 40px;
+    display: block;
+    margin: 24px auto 0 auto;
+  }
+  .btn-try:hover { transform: scale(1.04); box-shadow: 0 6px 20px rgba(249,115,22,0.35); }
+
+  /* ── PROBLEMS GRID ── */
+  .problems-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 10px 8px;
+    margin-bottom: 6px;
+  }
+  @media (max-width: 700px) {
+    .problems-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+  }
+  @media (min-width: 701px) and (max-width: 900px) {
+    .problems-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  .problem-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8faff;
+    border-radius: 12px;
+    border: 2px solid #e0e7ff;
+    padding: 8px 4px 6px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .problem-cell.correct { border-color: #86efac; background: #f0fdf4; }
+  .problem-cell.wrong { border-color: #fca5a5; background: #fff1f2; }
+
+  .problem-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+    color: #1e3a8a;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+  }
+  .answer-input {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    width: 100%;
+    max-width: 58px;
+    height: 42px;
+    border: 2.5px solid #a5b4fc;
+    border-radius: 10px;
+    text-align: center;
+    outline: none;
+    background: white;
+    color: #1e3a8a;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .answer-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
+  }
+  .answer-input:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+  .answer-input.correct { border-color: #22c55e; background: #f0fdf4; }
+  .answer-input.wrong { border-color: #ef4444; background: #fff1f2; }
+
+  .mark {
+    position: absolute;
+    top: 4px; right: 6px;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .mark.x { color: #ef4444; }
+  .mark.check { color: #22c55e; font-size: 0.9rem; }
+
+  /* ── RESULT BANNER ── */
+  .result-banner {
+    text-align: center;
+    margin-top: 18px;
+    animation: fadeIn 0.5s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+
+  .result-banner.win .result-emoji { font-size: 3.5rem; }
+  .result-banner .result-msg {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    margin: 6px 0 4px;
+  }
+  .result-banner.win .result-msg { color: #15803d; }
+  .result-banner.lose .result-msg { color: #ea580c; }
+  .result-banner .result-sub {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  /* ── CONFETTI ── */
+  #confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── START SCREEN ── */
+  .start-screen { text-align: center; padding: 20px 0 10px; }
+  .start-screen .welcome-icon { font-size: 3rem; margin-bottom: 10px; }
+  .start-screen p {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  /* ── SCORE ── */
+  .score-line {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    color: #6366f1;
+    text-align: center;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="app-header">
+  <div class="stars-deco">⭐🌟</div>
+  <h1>Mad Minute Subtraction Tests</h1>
+  <div class="stars-deco2">🌟⭐</div>
+</div>
+
+<div class="tabs-wrapper">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<script>
+// ── DATA ──
+const TABS = [
+  { label: '-0',   sub: [0],                    mixed: false },
+  { label: '-1',   sub: [1],                    mixed: false },
+  { label: '-2',   sub: [2],                    mixed: false },
+  { label: '-3',   sub: [3],                    mixed: false },
+  { label: '-0–3', sub: [0,1,2,3],              mixed: true  },
+  { label: '-4',   sub: [4],                    mixed: false },
+  { label: '-5',   sub: [5],                    mixed: false },
+  { label: '-6',   sub: [6],                    mixed: false },
+  { label: '-7',   sub: [7],                    mixed: false },
+  { label: '-0–7', sub: [0,1,2,3,4,5,6,7],     mixed: true  },
+  { label: '-8',   sub: [8],                    mixed: false },
+  { label: '-9',   sub: [9],                    mixed: false },
+  { label: '-10',  sub: [10],                   mixed: false },
+  { label: '-0–10',sub: [0,1,2,3,4,5,6,7,8,9,10], mixed: true },
+];
+
+let activeTab = 0;
+let timerInterval = null;
+let timeLeft = 60;
+let testRunning = false;
+
+// ── UTILS ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateProblems(subtractors, n = 18) {
+  // Build pool of valid problems
+  let pool = [];
+  subtractors.forEach(sub => {
+    for (let result = 0; result <= 18; result++) {
+      const top = result + sub;
+      if (top >= sub && top <= 18) pool.push({ top, sub, ans: result });
+    }
+  });
+  pool = shuffle(pool);
+  // Pick n, ensure variety
+  const chosen = [];
+  const used = new Set();
+  for (let p of pool) {
+    const key = `${p.top}-${p.sub}`;
+    if (!used.has(key)) { used.add(key); chosen.push(p); }
+    if (chosen.length === n) break;
+  }
+  // If not enough unique, repeat shuffled pool
+  while (chosen.length < n) {
+    const extra = shuffle(pool);
+    for (let p of extra) {
+      chosen.push(p);
+      if (chosen.length === n) break;
+    }
+  }
+  return chosen.slice(0, n);
+}
+
+function headingText(tab) {
+  if (tab.mixed) {
+    const max = tab.sub[tab.sub.length - 1];
+    return `Subtraction -0 through -${max} Facts`;
+  }
+  return `Subtraction -${tab.sub[0]} Facts`;
+}
+
+// ── TIMER ──
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 60;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      checkAnswers(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  if (!el) return;
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  el.classList.toggle('urgent', timeLeft <= 10);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ── RENDER ──
+function renderTabs() {
+  const container = document.getElementById('tabs');
+  container.innerHTML = '';
+  TABS.forEach((tab, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (tab.mixed ? ' mixed' : '') + (i === activeTab ? ' active' : '');
+    btn.textContent = tab.label;
+    btn.onclick = () => switchTab(i);
+    container.appendChild(btn);
+  });
+}
+
+let currentProblems = [];
+
+function renderPanel(started = false) {
+  const tab = TABS[activeTab];
+  const panel = document.getElementById('panel');
+
+  if (!started) {
+    currentProblems = generateProblems(tab.sub);
+    panel.innerHTML = `
+      <div class="fact-heading">${headingText(tab)}</div>
+      <div class="start-screen">
+        <div class="welcome-icon">🧮</div>
+        <p>Ready to practice your ${tab.label} facts?<br>Click Start when you're ready!</p>
+        <button class="btn btn-start" onclick="beginTest()">▶ Start!</button>
+      </div>
+    `;
+  } else {
+    panel.innerHTML = `
+      <div class="fact-heading">${headingText(tab)}</div>
+      <div class="controls-bar">
+        <div class="timer-display" id="timer">1:00</div>
+        <button class="btn btn-check" onclick="checkAnswers(false)">✓ Check</button>
+      </div>
+      <div class="problems-grid" id="problems-grid"></div>
+      <div id="result-area"></div>
+    `;
+    renderProblems();
+    startTimer();
+    testRunning = true;
+    // Focus first input
+    setTimeout(() => {
+      const first = document.querySelector('.answer-input');
+      if (first) first.focus();
+    }, 100);
+  }
+}
+
+function renderProblems(lockAll = false) {
+  const grid = document.getElementById('problems-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  currentProblems.forEach((p, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'problem-cell';
+    cell.id = `cell-${i}`;
+    cell.innerHTML = `
+      <div class="problem-text">${p.top} − ${p.sub} =</div>
+      <input
+        class="answer-input"
+        id="ans-${i}"
+        type="number"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        min="0" max="20"
+        ${lockAll ? 'disabled' : ''}
+        autocomplete="off"
+        onkeydown="handleKey(event, ${i})"
+      />
+    `;
+    grid.appendChild(cell);
+  });
+}
+
+function handleKey(e, i) {
+  if (e.key === 'Enter' || e.key === 'Tab') {
+    e.preventDefault();
+    const next = document.getElementById(`ans-${i + 1}`);
+    if (next) next.focus();
+  }
+}
+
+function beginTest() {
+  stopTimer();
+  testRunning = false;
+  renderPanel(true);
+}
+
+function switchTab(i) {
+  stopTimer();
+  testRunning = false;
+  activeTab = i;
+  renderTabs();
+  renderPanel(false);
+}
+
+// ── CHECK ──
+function checkAnswers(fromTimer) {
+  stopTimer();
+  testRunning = false;
+
+  let correct = 0;
+  let total = currentProblems.length;
+
+  currentProblems.forEach((p, i) => {
+    const input = document.getElementById(`ans-${i}`);
+    const cell = document.getElementById(`cell-${i}`);
+    if (!input || !cell) return;
+
+    input.disabled = true;
+    // Remove old marks
+    cell.querySelectorAll('.mark').forEach(m => m.remove());
+
+    const val = input.value.trim();
+    const userAns = parseInt(val, 10);
+
+    if (val !== '' && userAns === p.ans) {
+      correct++;
+      cell.classList.add('correct');
+      input.classList.add('correct');
+      const mark = document.createElement('span');
+      mark.className = 'mark check';
+      mark.textContent = '✓';
+      cell.appendChild(mark);
+    } else {
+      cell.classList.add('wrong');
+      input.classList.add('wrong');
+      const mark = document.createElement('span');
+      mark.className = 'mark x';
+      mark.textContent = '✗';
+      cell.appendChild(mark);
+    }
+  });
+
+  showResult(correct, total);
+}
+
+function showResult(correct, total) {
+  const area = document.getElementById('result-area');
+  if (!area) return;
+
+  if (correct === total) {
+    area.innerHTML = `
+      <div class="result-banner win">
+        <div class="result-emoji">🏆🎉⭐</div>
+        <div class="result-msg">Congratulations!</div>
+        <div class="result-sub">You got all ${total} correct! Amazing work!</div>
+      </div>
+    `;
+    launchConfetti();
+  } else {
+    area.innerHTML = `
+      <div class="result-banner lose">
+        <div class="result-emoji">💪</div>
+        <div class="result-msg">Try again! You got this!</div>
+        <div class="score-line">You got ${correct} out of ${total} correct.</div>
+        <button class="btn btn-try" onclick="tryAgain()">🔄 Try Again</button>
+      </div>
+    `;
+  }
+}
+
+function tryAgain() {
+  stopTimer();
+  testRunning = false;
+  currentProblems = generateProblems(TABS[activeTab].sub);
+  const panel = document.getElementById('panel');
+  const tab = TABS[activeTab];
+  panel.innerHTML = `
+    <div class="fact-heading">${headingText(tab)}</div>
+    <div class="controls-bar">
+      <div class="timer-display" id="timer">1:00</div>
+      <button class="btn btn-check" onclick="checkAnswers(false)">✓ Check</button>
+    </div>
+    <div class="problems-grid" id="problems-grid"></div>
+    <div id="result-area"></div>
+  `;
+  renderProblems();
+  startTimer();
+  testRunning = true;
+  setTimeout(() => {
+    const first = document.querySelector('.answer-input');
+    if (first) first.focus();
+  }, 100);
+}
+
+// ── CONFETTI ──
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#3b82f6','#22c55e','#f97316','#fbbf24','#8b5cf6','#ec4899','#ef4444','#06b6d4'];
+  const pieces = Array.from({length: 130}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height,
+    w: 8 + Math.random() * 10,
+    h: 5 + Math.random() * 6,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speed: 2 + Math.random() * 4,
+    angle: Math.random() * 360,
+    spin: (Math.random() - 0.5) * 6,
+    drift: (Math.random() - 0.5) * 2,
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+      p.y += p.speed;
+      p.x += p.drift;
+      p.angle += p.spin;
+    });
+    frame++;
+    if (frame < 220) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+
+// ── INIT ──
+renderTabs();
+renderPanel(false);
+</script>
+</body>
+</html>
